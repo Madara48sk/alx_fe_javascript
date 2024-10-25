@@ -84,13 +84,13 @@ async function fetchQuotesFromServer() {
         const response = await fetch(serverURL);
         const data = await response.json();
         const serverQuotes = data.map(post => ({ text: post.title, category: post.body }));
-        syncData(serverQuotes);
+        syncQuotes(serverQuotes);
     } catch (error) {
         console.error('Error fetching quotes:', error);
     }
 }
 
-function syncData(serverQuotes) {
+function syncQuotes(serverQuotes) {
     const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
 
     // Simple conflict resolution strategy: prioritize server data
@@ -105,7 +105,6 @@ function syncData(serverQuotes) {
     // Update sync status
     syncStatus.textContent = 'Data synced successfully.';
 }
-
 // Periodically fetch quotes from the server
 setInterval(fetchQuotesFromServer, 5000); // Adjust interval as needed
 
