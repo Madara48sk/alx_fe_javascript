@@ -75,14 +75,15 @@ function filterQuotes() {
 // Simulate server interactions (replace with actual API calls)
 const serverURL = 'https://jsonplaceholder.typicode.com/posts';
 
-function fetchQuotesFromServer() {
-    fetch(serverURL)
-        .then(response => response.json())
-        .then(data => {
-            const serverQuotes = data.map(post => ({ text: post.title, category: post.body }));
-            syncData(serverQuotes);
-        })
-        .catch(error => console.error('Error fetching quotes:', error));
+async function fetchQuotesFromServer() {
+    try {
+        const response = await fetch(serverURL);
+        const data = await response.json();
+        const serverQuotes = data.map(post => ({ text: post.title, category: post.body }));
+        syncData(serverQuotes);
+    } catch (error) {
+        console.error('Error fetching quotes:', error);
+    }
 }
 
 function syncData(serverQuotes) {
