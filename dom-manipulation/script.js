@@ -52,7 +52,7 @@ function populateCategories() {
     uniqueCategories.forEach(category => {
         const option = document.createElement('option');
         option.value = category;
-        option.text = category;
+        option.textContent = category;
         categoryFilter.appendChild(option);
     });
 }
@@ -62,10 +62,10 @@ function filterQuotes() {
     const selectedCategory = document.getElementById('categoryFilter').value;
 
     if (selectedCategory === 'all') {
-        quoteDisplay.innerHTML = quotes.map(quote => `"${quote.text}" - ${quote.category}`).join('<br>');
+        quoteDisplay.textContent = quotes.map(quote => `"${quote.text}" - ${quote.category}`).join('<br>');
     } else {
         const filteredQuotes = quotes.filter(quote => quote.category === selectedCategory);
-        quoteDisplay.innerHTML = filteredQuotes.map(quote => `"${quote.text}" - ${quote.category}`).join('<br>');
+        quoteDisplay.textContent = filteredQuotes.map(quote => `"${quote.text}" - ${quote.category}`).join('<br>');
     }
 
     // Save the selected category to local storage
