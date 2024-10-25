@@ -72,6 +72,38 @@ function filterQuotes() {
     localStorage.setItem('lastSelectedCategory', selectedCategory);
 }
 
+// Simulate server interactions (replace with actual API calls)
+const serverURL = 'https://jsonplaceholder.typicode.com/posts';
+
+function fetchQuotesFromServer() {
+    fetch(serverURL)
+        .then(response => response.json())
+        .then(data => {
+            const serverQuotes = data.map(post => ({ text: post.title, category: post.body }));
+            syncData(serverQuotes);
+        })
+        .catch(error => console.error('Error fetching quotes:', error));
+}
+
+function syncData(serverQuotes) {
+    const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+    // Simple conflict resolution strategy: prioritize server data
+    const mergedQuotes = serverQuotes.concat(localQuotes.filter(quote => !serverQuotes.some(serverQuote => serverQuote.text === quote.text)));
+
+    localStorage.setItem('quotes', JSON.stringify(mergedQuotes));
+    quotes = mergedQuotes;
+
+    // Update quote display
+    showRandomQuote();
+
+    // Update sync status
+    document.getElementById('syncStatus').textContent = 'Data synced successfully.';
+}
+
+// Periodically fetch quotes from the server
+setInterval(fetchQuotesFromServer, 5000); // Adjust interval as needed
+
 // JSON Export functionality
 function exportQuotesToJson() {
     const jsonData = JSON.stringify(quotes);
