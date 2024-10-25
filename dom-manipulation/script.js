@@ -6,6 +6,7 @@ const newQuoteText = document.getElementById('newQuoteText');
 const newQuoteCategory = document.getElementById('newQuoteCategory');
 const importFile = document.getElementById('importFile');
 const exportButton = document.getElementById('exportButton');
+const syncStatus = document.getElementById('syncStatus');
 
 let quotes = [];
 
@@ -33,6 +34,9 @@ function addQuote() {
     newQuoteCategory.value = '';
     saveQuotes();
     showRandomQuote();
+
+    // Send the new quote to the server
+    sendNewQuoteToServer(newQuote);
 }
 
 // Save quotes to local storage after modifications
@@ -90,7 +94,7 @@ function syncData(serverQuotes) {
     const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
 
     // Simple conflict resolution strategy: prioritize server data
-    const mergedQuotes = serverQuotes.concat(localQuotes.filter(quote => !serverQuotes.some(serverQuote => serverQuote.text === quote.text)));
+    const mergedQuotes = serverQuotes.concat(localQuotes.filter(quote => !serverQuotes.some(serverQuote => serverQuote.text === serverQuote.text)));
 
     localStorage.setItem('quotes', JSON.stringify(mergedQuotes));
     quotes = mergedQuotes;
@@ -99,11 +103,33 @@ function syncData(serverQuotes) {
     showRandomQuote();
 
     // Update sync status
-    document.getElementById('syncStatus').textContent = 'Data synced successfully.';
+    syncStatus.textContent = 'Data synced successfully.';
 }
 
 // Periodically fetch quotes from the server
 setInterval(fetchQuotesFromServer, 5000); // Adjust interval as needed
+
+// Send a new quote to the server
+async function sendNewQuoteToServer(newQuote) {
+    try {
+        const response = await fetch(serverURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newQuote)
+        });
+
+        if (response.ok) {
+            console.log('Quote sent successfully!');
+            // Handle successful response, e.g., update local quotes
+        } else {
+            console.error('Error sending quote:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error sending quote:', error);
+    }
+}
 
 // JSON Export functionality
 function exportQuotesToJson() {
