@@ -20,7 +20,7 @@ function showRandomQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
 
-    quoteDisplay.innerHTML = `"${randomQuote.text}" - ${randomQuote.category}`;
+    quoteDisplay.textContent = `"${randomQuote.text}" - ${randomQuote.category}`;
 }
 
 function addQuote() {
@@ -103,8 +103,9 @@ function syncQuotes(serverQuotes) {
     showRandomQuote();
 
     // Update sync status
-    syncStatus.textContent = 'Data synced successfully.';
+    syncStatus.textContent = 'Quotes synced with server!';
 }
+
 // Periodically fetch quotes from the server
 setInterval(fetchQuotesFromServer, 5000); // Adjust interval as needed
 
