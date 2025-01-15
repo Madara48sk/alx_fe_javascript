@@ -19,7 +19,6 @@ if (storedQuotes) {
 function showRandomQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
-
     quoteDisplay.textContent = `"${randomQuote.text}" - ${randomQuote.category}`;
 }
 
@@ -64,14 +63,12 @@ function populateCategories() {
 // Filter quotes based on selected category
 function filterQuotes() {
     const selectedCategory = document.getElementById('categoryFilter').value;
-
     if (selectedCategory === 'all') {
         quoteDisplay.textContent = quotes.map(quote => `"${quote.text}" - ${quote.category}`).join('<br>');
     } else {
         const filteredQuotes = quotes.filter(quote => quote.category === selectedCategory);
         quoteDisplay.textContent = filteredQuotes.map(quote => `"${quote.text}" - ${quote.category}`).join('<br>');
     }
-
     // Save the selected category to local storage
     localStorage.setItem('lastSelectedCategory', selectedCategory);
 }
@@ -92,16 +89,13 @@ async function fetchQuotesFromServer() {
 
 function syncQuotes(serverQuotes) {
     const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
-
     // Simple conflict resolution strategy: prioritize server data
-    const mergedQuotes = serverQuotes.concat(localQuotes.filter(quote => !serverQuotes.some(serverQuote => serverQuote.text === serverQuote.text)));
+    const mergedQuotes = serverQuotes.concat(localQuotes.filter(quote => !serverQuotes.some(serverQuote => serverQuote.text === quote.text)));
 
     localStorage.setItem('quotes', JSON.stringify(mergedQuotes));
     quotes = mergedQuotes;
-
     // Update quote display
     showRandomQuote();
-
     // Update sync status
     syncStatus.textContent = 'Quotes synced with server!';
 }
@@ -152,10 +146,21 @@ function importFromJsonFile(event) {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes);
         saveQuotes();
+         // Update categories in dropdown
+        populateCategories();
         alert('Quotes imported successfully!');
     };
     fileReader.readAsText(event.target.files[0]);
 }
+
+function toggleForm(){
+   if(addQuoteForm.style.display === 'none'){
+      addQuoteForm.style.display = 'block'
+   } else {
+        addQuoteForm.style.display = 'none'
+   }
+}
+
 
 newQuoteButton.addEventListener('click', showRandomQuote);
 addQuoteButton.addEventListener('click', toggleForm);
@@ -163,9 +168,9 @@ importFile.addEventListener('change', importFromJsonFile);
 exportButton.addEventListener('click', exportQuotesToJson);
 
 // Show last viewed quote (optional)
-const lastQuote = retrieveLastViewedQuote();
+const lastQuote = localStorage.getItem('lastViewedQuote');
 if (lastQuote) {
-    quoteDisplay.innerHTML = `"${lastQuote.text}" - ${lastQuote.category}`;
+    quoteDisplay.innerHTML = `"${JSON.parse(lastQuote).text}" - ${JSON.parse(lastQuote).category}`;
 } else {
     showRandomQuote();
 }
@@ -173,13 +178,8 @@ if (lastQuote) {
 // Store last viewed quote on quote change (optional)
 newQuoteButton.addEventListener('click', () => {
     const currentQuote = quotes[quotes.length - 1];
-    storeLastViewedQuote(currentQuote);
+    localStorage.setItem('lastViewedQuote', JSON.stringify(currentQuote));
 });
 
-// Update categories in dropdown when adding new quotes
-addQuoteButton.addEventListener('click', () => {
-    // ... (existing code)
-
-    // Update categories in dropdown
-    populateCategories();
-});
+// Populate categories initially
+populateCategories();
