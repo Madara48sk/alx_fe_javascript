@@ -146,31 +146,43 @@ function importFromJsonFile(event) {
         const importedQuotes = JSON.parse(event.target.result);
         quotes.push(...importedQuotes);
         saveQuotes();
-         // Update categories in dropdown
+        // Update categories in dropdown
         populateCategories();
         alert('Quotes imported successfully!');
     };
     fileReader.readAsText(event.target.files[0]);
 }
+// Function to create and render the add quote form
+function createAddQuoteForm() {
+    const form = document.createElement('div');
+    form.innerHTML = `
+        <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
+        <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
+        <button onclick="addQuote()">Add Quote</button>
+    `;
+     addQuoteForm.innerHTML = ''; // Remove old content before appending
+    addQuoteForm.appendChild(form);
+}
 
 function toggleForm(){
    if(addQuoteForm.style.display === 'none'){
-      addQuoteForm.style.display = 'block'
+      addQuoteForm.style.display = 'block';
+    //    createAddQuoteForm(); // Create the form when opening, in case it needs to be re-rendered.
    } else {
-        addQuoteForm.style.display = 'none'
+        addQuoteForm.style.display = 'none';
    }
 }
-
 
 newQuoteButton.addEventListener('click', showRandomQuote);
 addQuoteButton.addEventListener('click', toggleForm);
 importFile.addEventListener('change', importFromJsonFile);
 exportButton.addEventListener('click', exportQuotesToJson);
 
+
 // Show last viewed quote (optional)
 const lastQuote = localStorage.getItem('lastViewedQuote');
 if (lastQuote) {
-    quoteDisplay.innerHTML = `"${JSON.parse(lastQuote).text}" - ${JSON.parse(lastQuote).category}`;
+    quoteDisplay.textContent = `"${JSON.parse(lastQuote).text}" - ${JSON.parse(lastQuote).category}`;
 } else {
     showRandomQuote();
 }
